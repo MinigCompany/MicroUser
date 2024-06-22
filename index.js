@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const AuthRoutes = require('./routes/AuthRoute');
+const WorkerRoute = require('./routes/WorkerRoute');
 
 const corsOptions = {
   origin: '*', // Reemplaza con tu dominio permitido
@@ -16,6 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use('/ApiMinig/Autenticacion', AuthRoutes);
+app.use('/ApiMinig/Trabajadores', WorkerRoute);
 
 const port = 3000; // Cambia esto al puerto que desees utilizar
 app.listen(port, () => {
