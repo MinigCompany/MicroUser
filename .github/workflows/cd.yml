@@ -14,11 +14,30 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Clean up unused images and containers
+      run: |
+        # Stop and remove any running containers
+        sudo docker ps -aq | xargs -r sudo docker rm -f
+        # Remove dangling images (those that are not referenced by any container)
+        sudo docker image prune -af
+        # Optionally, remove all unused volumes
+        sudo docker volume prune -f
+        
     - name: Pull Docker image
       run: sudo docker pull ${{ secrets.DOCKER_USERNAME }}/micro-user:latest
 
+    - name: Run new Docker Container
+      run: |
+        # Run the new container with a temporary name and port
+        sudo docker run -d -p 3000:3000 --name micro-user-container ${{ secrets.DOCKER_USERNAME }}/micro-user:latest
+        # Wait for the new container to be ready (you might need to adjust this)
+        sleep 10
+        
     - name: Delete Old Docker container
       run: sudo docker rm -f micro-user-container || true
-
+    - name: Rename new Docker container
+      run: |
+        # Rename the new container to the old container's name
+        sudo docker rename micro-user-container-new micro-user-containe
     - name: Run Docker Container
       run: sudo docker run -d -p 3000:3000 --name micro-user-container ${{ secrets.DOCKER_USERNAME }}/micro-user:latest
